@@ -7,23 +7,18 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       background-color: #f0f0f0;
-      font-family: Arial, sans-serif;
-    }
-
-    #game-container {
-      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
     #gameCanvas {
       background-color: #1a3a6e;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
       border: 3px solid #2a4a7e;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #000;
     }
 
     #success-message {
@@ -31,73 +26,58 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.8);
       color: white;
       padding: 30px;
       border-radius: 10px;
       font-size: 24px;
       display: none;
-      text-align: center;
-      animation: fadeIn 0.5s;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <div id="game-container">
-    <canvas id="gameCanvas" width="800" height="500"></canvas>
-    <div id="success-message">
-      <h2>Parabéns!</h2>
-      <p>Você completou o desafio!</p>
-    </div>
-  </div>
+  <canvas id="gameCanvas" width="800" height="500"></canvas>
+  <div id="success-message">Parabéns! Você completou o desafio!</div>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    const successMessage = document.getElementById("success-message");
+    const msg = document.getElementById("success-message");
 
-    const carImage = new Image();
-    carImage.src = "carro-removebg-preview.png";
-    const parkedCarImage = new Image();
-    parkedCarImage.src = "carro-removebg-preview.png";
+    const carImg = new Image();
+    carImg.src = "carro-removebg-preview.png"; // ⬅ troque aqui se quiser
+    const parkedImg = new Image();
+    parkedImg.src = "carro-removebg-preview.png"; // ⬅ troque aqui também
 
-    const playerCar = {
+    const player = {
       x: 100, y: 250, width: 45, height: 80,
       angle: 0, speed: 0,
       maxSpeed: 3, acceleration: 0.05, deceleration: 0.02, turnSpeed: 0.03
     };
 
     let currentLevel = 0;
-
     const levels = [
       {
         parkingSpot: { x: 700, y: 100, width: 60, height: 100, angle: 0 },
-        parkedCars: [ ]
+        parkedCars: []
       },
       {
         parkingSpot: { x: 100, y: 400, width: 60, height: 100, angle: 0 },
-        parkedCars: [
-          { x: 100, y: 300, width: 45, height: 80, angle: 0 }
-        ]
+        parkedCars: [{ x: 100, y: 300, width: 45, height: 80 }]
       },
       {
         parkingSpot: { x: 400, y: 250, width: 60, height: 100, angle: 0 },
         parkedCars: [
-          { x: 400, y: 150, width: 45, height: 80, angle: 0 },
-          { x: 400, y: 350, width: 45, height: 80, angle: 0 }
+          { x: 400, y: 150, width: 45, height: 80 },
+          { x: 400, y: 350, width: 45, height: 80 }
         ]
       }
     ];
 
     const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
-
-    document.addEventListener('keydown', e => { if (keys.hasOwnProperty(e.key)) keys[e.key] = true; });
-    document.addEventListener('keyup', e => { if (keys.hasOwnProperty(e.key)) keys[e.key] = false; });
+    document.addEventListener("keydown", e => keys[e.key] = true);
+    document.addEventListener("keyup", e => keys[e.key] = false);
 
     function drawRotatedImage(img, x, y, width, height, angle) {
       ctx.save();
@@ -117,25 +97,27 @@
     }
 
     function update() {
-      if (keys.ArrowUp) playerCar.speed = Math.max(playerCar.speed - playerCar.acceleration, -playerCar.maxSpeed);
-      else if (keys.ArrowDown) playerCar.speed = Math.min(playerCar.speed + playerCar.acceleration, playerCar.maxSpeed);
-      else playerCar.speed *= 0.98;
+      // movimento
+      if (keys.ArrowUp) player.speed = Math.min(player.speed + player.acceleration, player.maxSpeed);
+      else if (keys.ArrowDown) player.speed = Math.max(player.speed - player.acceleration, -player.maxSpeed / 2);
+      else player.speed *= 0.95;
 
-      if (keys.ArrowLeft) playerCar.angle -= playerCar.turnSpeed * playerCar.speed;
-      if (keys.ArrowRight) playerCar.angle += playerCar.turnSpeed * playerCar.speed;
+      if (keys.ArrowLeft) player.angle -= player.turnSpeed * player.speed;
+      if (keys.ArrowRight) player.angle += player.turnSpeed * player.speed;
 
-      const nextX = playerCar.x + Math.sin(playerCar.angle) * playerCar.speed;
-      const nextY = playerCar.y - Math.cos(playerCar.angle) * playerCar.speed;
+      const nextX = player.x + Math.sin(player.angle) * player.speed;
+      const nextY = player.y - Math.cos(player.angle) * player.speed;
 
       const playerRect = {
-        x: nextX - playerCar.width / 2,
-        y: nextY - playerCar.height / 2,
-        width: playerCar.width,
-        height: playerCar.height
+        x: nextX - player.width / 2,
+        y: nextY - player.height / 2,
+        width: player.width,
+        height: player.height
       };
 
       const level = levels[currentLevel];
       let collided = false;
+
       for (const car of level.parkedCars) {
         const parkedRect = {
           x: car.x - car.width / 2,
@@ -150,26 +132,29 @@
       }
 
       if (!collided) {
-        playerCar.x = nextX;
-        playerCar.y = nextY;
+        player.x = nextX;
+        player.y = nextY;
       } else {
-        playerCar.speed = 0;
+        player.speed = 0;
       }
 
-      playerCar.x = Math.max(playerCar.width / 2, Math.min(canvas.width - playerCar.width / 2, playerCar.x));
-      playerCar.y = Math.max(playerCar.height / 2, Math.min(canvas.height - playerCar.height / 2, playerCar.y));
+      // limites
+      player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
+      player.y = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
 
-      if (
-        Math.abs(playerCar.x - level.parkingSpot.x) < 20 &&
-        Math.abs(playerCar.y - level.parkingSpot.y) < 20 &&
-        Math.abs(playerCar.angle - level.parkingSpot.angle) < 0.2 &&
-        Math.abs(playerCar.speed) < 0.1
-      ) {
+      // checar vaga
+      const spot = level.parkingSpot;
+      const dx = player.x - spot.x;
+      const dy = player.y - spot.y;
+      const angleDiff = Math.abs(player.angle - spot.angle);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 20 && angleDiff < 0.3 && Math.abs(player.speed) < 0.1) {
         if (currentLevel < levels.length - 1) {
           currentLevel++;
-          resetGame();
+          resetPlayer();
         } else {
-          successMessage.style.display = 'block';
+          msg.style.display = 'block';
         }
       }
     }
@@ -178,9 +163,10 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#2a3a4a';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
 
+      // linhas de vaga
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
       for (let y = 50; y < canvas.height; y += 100) {
         for (let x = 150; x < canvas.width; x += 200) {
           ctx.strokeRect(x, y, 60, 100);
@@ -189,32 +175,36 @@
 
       const level = levels[currentLevel];
 
-      level.parkedCars.forEach(car => {
-        drawRotatedImage(parkedCarImage, car.x, car.y, car.width, car.height, car.angle);
-      });
-
+      // desenhar vaga
       ctx.setLineDash([5, 5]);
       ctx.strokeStyle = '#4CAF50';
-      ctx.strokeRect(level.parkingSpot.x - level.parkingSpot.width / 2, level.parkingSpot.y - level.parkingSpot.height / 2, level.parkingSpot.width, level.parkingSpot.height);
+      ctx.strokeRect(level.parkingSpot.x - 30, level.parkingSpot.y - 50, 60, 100);
       ctx.setLineDash([]);
 
-      drawRotatedImage(carImage, playerCar.x, playerCar.y, playerCar.width, playerCar.height, playerCar.angle);
+      // carros estacionados
+      for (const car of level.parkedCars) {
+        drawRotatedImage(parkedImg, car.x, car.y, car.width, car.height, 0);
+      }
+
+      // carro do jogador
+      drawRotatedImage(carImg, player.x, player.y, player.width, player.height, player.angle);
     }
 
-    function gameLoop() {
+    function resetPlayer() {
+      player.x = 100;
+      player.y = 250;
+      player.speed = 0;
+      player.angle = 0;
+    }
+
+    function loop() {
       update();
       draw();
-      requestAnimationFrame(gameLoop);
+      requestAnimationFrame(loop);
     }
 
-    function resetGame() {
-      playerCar.x = 100;
-      playerCar.y = 250;
-      playerCar.angle = 0;
-      playerCar.speed = 0;
-    }
-
-    gameLoop();
+    // Esperar imagens carregarem
+    carImg.onload = () => parkedImg.onload = () => loop();
   </script>
 </body>
 </html>
