@@ -1,452 +1,243 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Estacionar</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        
-        #game-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        #gameCanvas {
-            background-color: #1a3a6e;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border: 3px solid #2a4a7e;
-        }
-        
-        #instructions {
-            max-width: 600px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        #controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .control-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #45a049;
-        }
-        
-        #success-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            font-size: 24px;
-            display: none;
-            text-align: center;
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        #parking-space {
-            position: absolute;
-            border: 2px dashed #4CAF50;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jogo de Estacionar</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    #game-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    #gameCanvas {
+      background-color: #1a3a6e;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      border: 3px solid #2a4a7e;
+    }
+
+    #instructions {
+      max-width: 600px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .control-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #success-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      font-size: 24px;
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #parking-space {
+      position: absolute;
+      border: 2px dashed #4CAF50;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <h1>Jogo de Estacionar</h1>
-    
-    <div id="instructions">
-        <p>Estacione seu carro na vaga disponível. Use as setas ou os botões abaixo para controlar o carro.</p>
-        <p>Movimentos lentos e precisos são essenciais para estacionar corretamente!</p>
+  <h1>Jogo de Estacionar</h1>
+
+  <div id="instructions">
+    <p>Estacione seu carro na vaga. Use as setas ou os botões abaixo para controlar o carro.</p>
+  </div>
+
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <div id="success-message">
+      <h2>Parabéns!</h2>
+      <p>Você estacionou corretamente!</p>
+      <button onclick="resetGame()">Jogar Novamente</button>
     </div>
-    
-    <div id="game-container">
-        <canvas id="gameCanvas" width="800" height="500"></canvas>
-        <div id="success-message">
-            <h2>Parabéns!</h2>
-            <p>Você estacionou corretamente!</p>
-            <button onclick="resetGame()">Jogar Novamente</button>
-        </div>
-        <div id="parking-space"></div>
+    <div id="parking-space"></div>
+  </div>
+
+  <div id="controls">
+    <div class="control-row">
+      <button id="up-btn">↑ Acelerar</button>
     </div>
-    
-    <div id="controls">
-        <div class="control-row">
-            <button id="up-btn">↑ Acelerar</button>
-        </div>
-        <div class="control-row">
-            <button id="left-btn">← Virar Esquerda</button>
-            <button id="right-btn">→ Virar Direita</button>
-        </div>
-        <div class="control-row">
-            <button id="down-btn">↓ Frear/Ré</button>
-        </div>
+    <div class="control-row">
+      <button id="left-btn">← Esquerda</button>
+      <button id="right-btn">→ Direita</button>
     </div>
-    
-    <script>
-        // Configurações do jogo
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const successMessage = document.getElementById('success-message');
-        const parkingSpace = document.getElementById('parking-space');
-        
-        // Configurações do carro do jogador
-        const playerCar = {
-            x: 100,
-            y: 250,
-            width: 45,
-            height: 80,
-            angle: 0,
-            speed: 0,
-            maxSpeed: 3,
-            acceleration: 0.05,
-            deceleration: 0.02,
-            turnSpeed: 0.03,
-            color: '#4285F4'
-        };
-        
-        // Carros estacionados
-        const parkedCars = [
-            { x: 200, y: 150, width: 45, height: 80, angle: 0, color: '#EA4335' },
-            { x: 200, y: 350, width: 45, height: 80, angle: 0, color: '#FBBC05' },
-            { x: 400, y: 250, width: 45, height: 80, angle: 0, color: '#34A853' },
-            { x: 600, y: 150, width: 45, height: 80, angle: 0, color: '#EA4335' },
-            { x: 600, y: 350, width: 45, height: 80, angle: 0, color: '#FBBC05' }
-        ];
-        
-        // Vaga de estacionamento
-        const parkingSpot = {
-            x: 700,
-            y: 250,
-            width: 60,
-            height: 100,
-            angle: 0
-        };
-        
-        // Controles
-        const upBtn = document.getElementById('up-btn');
-        const downBtn = document.getElementById('down-btn');
-        const leftBtn = document.getElementById('left-btn');
-        const rightBtn = document.getElementById('right-btn');
-        
-        let keys = {
-            ArrowUp: false,
-            ArrowDown: false,
-            ArrowLeft: false,
-            ArrowRight: false
-        };
-        
-        // Configurar controles de teclado
-        document.addEventListener('keydown', (e) => {
-            if (keys.hasOwnProperty(e.key)) {
-                keys[e.key] = true;
-            }
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            if (keys.hasOwnProperty(e.key)) {
-                keys[e.key] = false;
-            }
-        });
-        
-        // Configurar controles de botão
-        upBtn.addEventListener('mousedown', () => keys.ArrowUp = true);
-        upBtn.addEventListener('mouseup', () => keys.ArrowUp = false);
-        upBtn.addEventListener('mouseleave', () => keys.ArrowUp = false);
-        
-        downBtn.addEventListener('mousedown', () => keys.ArrowDown = true);
-        downBtn.addEventListener('mouseup', () => keys.ArrowDown = false);
-        downBtn.addEventListener('mouseleave', () => keys.ArrowDown = false);
-        
-        leftBtn.addEventListener('mousedown', () => keys.ArrowLeft = true);
-        leftBtn.addEventListener('mouseup', () => keys.ArrowLeft = false);
-        leftBtn.addEventListener('mouseleave', () => keys.ArrowLeft = false);
-        
-        rightBtn.addEventListener('mousedown', () => keys.ArrowRight = true);
-        rightBtn.addEventListener('mouseup', () => keys.ArrowRight = false);
-        rightBtn.addEventListener('mouseleave', () => keys.ArrowRight = false);
-        
-        // Desenhar um retângulo rotacionado
-        function drawRotatedRect(x, y, width, height, angle, color) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(angle);
-            
-            // Car body
-            ctx.fillStyle = color;
-            ctx.fillRect(-width/2, -height/2, width, height);
-            
-            // Windows
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.fillRect(-width/2 + 5, -height/2 + 5, width - 10, height/3);
-            
-            // Headlights
-            ctx.fillStyle = '#fff9c4';
-            ctx.fillRect(width/2 - 5, -height/4, 5, height/6);
-            ctx.fillRect(width/2 - 5, height/12, 5, height/6);
-            
-            // Taillights
-            ctx.fillStyle = '#ff5252';
-            ctx.fillRect(-width/2, -height/4, 5, height/6);
-            ctx.fillRect(-width/2, height/12, 5, height/6);
-            
-            ctx.restore();
+    <div class="control-row">
+      <button id="down-btn">↓ Ré</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const successMessage = document.getElementById("success-message");
+    const parkingSpace = document.getElementById("parking-space");
+
+    const carImage = new Image();
+    carImage.src = "https://raw.githubusercontent.com/seu-usuario/seu-repo/main/player-car.png";
+
+    const parkedCarImage = new Image();
+    parkedCarImage.src = "https://raw.githubusercontent.com/seu-usuario/seu-repo/main/parked-car.png";
+
+    const playerCar = {
+      x: 100, y: 250, width: 45, height: 80,
+      angle: 0, speed: 0,
+      maxSpeed: 3, acceleration: 0.05, deceleration: 0.02, turnSpeed: 0.03
+    };
+
+    const parkedCars = [
+      { x: 180, y: 100, width: 45, height: 80, angle: 0 },
+      { x: 380, y: 200, width: 45, height: 80, angle: 0 },
+      { x: 580, y: 300, width: 45, height: 80, angle: 0 }
+    ];
+
+    const parkingSpot = { x: 700, y: 400, width: 60, height: 100, angle: 0 };
+
+    const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+
+    document.addEventListener('keydown', e => { if (keys.hasOwnProperty(e.key)) keys[e.key] = true; });
+    document.addEventListener('keyup', e => { if (keys.hasOwnProperty(e.key)) keys[e.key] = false; });
+
+    document.getElementById("up-btn").onmousedown = () => keys.ArrowUp = true;
+    document.getElementById("down-btn").onmousedown = () => keys.ArrowDown = true;
+    document.getElementById("left-btn").onmousedown = () => keys.ArrowLeft = true;
+    document.getElementById("right-btn").onmousedown = () => keys.ArrowRight = true;
+
+    document.querySelectorAll("button").forEach(btn => btn.onmouseup = btn.onmouseleave = () => {
+      keys.ArrowUp = keys.ArrowDown = keys.ArrowLeft = keys.ArrowRight = false;
+    });
+
+    function drawRotatedImage(img, x, y, width, height, angle) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.drawImage(img, -width / 2, -height / 2, width, height);
+      ctx.restore();
+    }
+
+    function update() {
+      if (keys.ArrowUp) playerCar.speed = Math.min(playerCar.speed + playerCar.acceleration, playerCar.maxSpeed);
+      else if (keys.ArrowDown) playerCar.speed = Math.max(playerCar.speed - playerCar.acceleration, -playerCar.maxSpeed / 2);
+      else playerCar.speed *= 0.98;
+
+      if (keys.ArrowLeft) playerCar.angle -= playerCar.turnSpeed * playerCar.speed;
+      if (keys.ArrowRight) playerCar.angle += playerCar.turnSpeed * playerCar.speed;
+
+      playerCar.x += Math.sin(playerCar.angle) * playerCar.speed;
+      playerCar.y -= Math.cos(playerCar.angle) * playerCar.speed;
+
+      playerCar.x = Math.max(playerCar.width / 2, Math.min(canvas.width - playerCar.width / 2, playerCar.x));
+      playerCar.y = Math.max(playerCar.height / 2, Math.min(canvas.height - playerCar.height / 2, playerCar.y));
+
+      if (
+        Math.abs(playerCar.x - parkingSpot.x) < 20 &&
+        Math.abs(playerCar.y - parkingSpot.y) < 20 &&
+        Math.abs(playerCar.angle - parkingSpot.angle) < 0.2 &&
+        Math.abs(playerCar.speed) < 0.1
+      ) {
+        successMessage.style.display = 'block';
+        parkingSpace.style.display = 'block';
+        parkingSpace.style.left = `${parkingSpot.x - parkingSpot.width / 2}px`;
+        parkingSpace.style.top = `${parkingSpot.y - parkingSpot.height / 2}px`;
+        parkingSpace.style.width = `${parkingSpot.width}px`;
+        parkingSpace.style.height = `${parkingSpot.height}px`;
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#2a3a4a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+
+      for (let y = 50; y < canvas.height; y += 100) {
+        for (let x = 150; x < canvas.width; x += 200) {
+          ctx.strokeRect(x, y, 60, 100);
         }
-        
-        // Verificar colisão entre retângulos rotacionados
-        function checkCollision(rect1, rect2) {
-            // Better collision detection using SAT (Separating Axis Theorem)
-            const corners1 = getRotatedRectCorners(rect1);
-            const corners2 = getRotatedRectCorners(rect2);
-            
-            const axes = [
-                {x: Math.sin(rect1.angle), y: -Math.cos(rect1.angle)},
-                {x: Math.cos(rect1.angle), y: Math.sin(rect1.angle)},
-                {x: Math.sin(rect2.angle), y: -Math.cos(rect2.angle)},
-                {x: Math.cos(rect2.angle), y: Math.sin(rect2.angle)}
-            ];
-            
-            for (let axis of axes) {
-                const proj1 = projectCorners(corners1, axis);
-                const proj2 = projectCorners(corners2, axis);
-                
-                if (proj1.max < proj2.min || proj2.max < proj1.min) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        
-        function getRotatedRectCorners(rect) {
-            const halfW = rect.width/2;
-            const halfH = rect.height/2;
-            const cos = Math.cos(rect.angle);
-            const sin = Math.sin(rect.angle);
-            
-            return [
-                {x: rect.x + (-halfW * cos - -halfH * sin), y: rect.y + (-halfW * sin + -halfH * cos)},
-                {x: rect.x + (halfW * cos - -halfH * sin), y: rect.y + (halfW * sin + -halfH * cos)},
-                {x: rect.x + (halfW * cos - halfH * sin), y: rect.y + (halfW * sin + halfH * cos)},
-                {x: rect.x + (-halfW * cos - halfH * sin), y: rect.y + (-halfW * sin + halfH * cos)}
-            ];
-        }
-        
-        function projectCorners(corners, axis) {
-            let min = Infinity;
-            let max = -Infinity;
-            
-            for (let corner of corners) {
-                const proj = corner.x * axis.x + corner.y * axis.y;
-                min = Math.min(min, proj);
-                max = Math.max(max, proj);
-            }
-            
-            return {min, max};
-        }
-        
-        // Verificar se o carro está bem estacionado
-        function checkParking() {
-            const carRect = {
-                x: playerCar.x,
-                y: playerCar.y,
-                width: playerCar.width,
-                height: playerCar.height,
-                angle: playerCar.angle
-            };
-            
-            const spotRect = parkingSpot;
-            
-            // Posição dentro da vaga (com tolerância)
-            const inPosition = 
-                Math.abs(carRect.x - spotRect.x) < 20 &&
-                Math.abs(carRect.y - spotRect.y) < 20 &&
-                Math.abs(carRect.angle - spotRect.angle) < 0.2;
-            
-            // Velocidade quase zero
-            const stopped = Math.abs(playerCar.speed) < 0.1;
-            
-            return inPosition && stopped;
-        }
-        
-        // Reiniciar o jogo
-        function resetGame() {
-            playerCar.x = 100;
-            playerCar.y = 250;
-            playerCar.angle = 0;
-            playerCar.speed = 0;
-            successMessage.style.display = 'none';
-            parkingSpace.style.display = 'none';
-        }
-        
-        // Atualizar posição do carro
-        function update() {
-            // Atualizar velocidade e direção
-            if (keys.ArrowUp) {
-                playerCar.speed = Math.min(playerCar.speed + playerCar.acceleration, playerCar.maxSpeed);
-            } else if (keys.ArrowDown) {
-                playerCar.speed = Math.max(playerCar.speed - playerCar.acceleration, -playerCar.maxSpeed/2);
-            } else {
-                // Desacelerar naturalmente
-                if (playerCar.speed > 0) {
-                    playerCar.speed = Math.max(playerCar.speed - playerCar.deceleration, 0);
-                } else if (playerCar.speed < 0) {
-                    playerCar.speed = Math.min(playerCar.speed + playerCar.deceleration, 0);
-                }
-            }
-            
-            // Virar o carro
-            if (keys.ArrowLeft) {
-                playerCar.angle -= playerCar.turnSpeed * playerCar.speed;
-            }
-            if (keys.ArrowRight) {
-                playerCar.angle += playerCar.turnSpeed * playerCar.speed;
-            }
-            
-            // Mover o carro
-            playerCar.x += Math.sin(playerCar.angle) * playerCar.speed;
-            playerCar.y -= Math.cos(playerCar.angle) * playerCar.speed;
-            
-            // Verificar colisões com outros carros
-            const playerRect = {
-                x: playerCar.x,
-                y: playerCar.y,
-                width: playerCar.width,
-                height: playerCar.height,
-                angle: playerCar.angle
-            };
-            
-            for (const car of parkedCars) {
-                if (checkCollision(playerRect, car)) {
-                    // Revert movement on collision
-                    playerCar.x -= Math.sin(playerCar.angle) * playerCar.speed;
-                    playerCar.y += Math.cos(playerCar.angle) * playerCar.speed;
-                    playerCar.speed = 0;
-                    break;
-                }
-            }
-            
-            // Verificar limites do canvas
-            playerCar.x = Math.max(playerCar.width/2, Math.min(canvas.width - playerCar.width/2, playerCar.x));
-            playerCar.y = Math.max(playerCar.height/2, Math.min(canvas.height - playerCar.height/2, playerCar.y));
-            
-            // Verificar se estacionou corretamente
-            if (checkParking()) {
-                successMessage.style.display = 'block';
-                parkingSpace.style.display = 'block';
-                parkingSpace.style.left = `${parkingSpot.x - parkingSpot.width/2}px`;
-                parkingSpace.style.top = `${parkingSpot.y - parkingSpot.height/2}px`;
-                parkingSpace.style.width = `${parkingSpot.width}px`;
-                parkingSpace.style.height = `${parkingSpot.height}px`;
-            }
-        }
-        
-        // Desenhar o jogo
-        function draw() {
-            // Limpar canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Desenhar piso do estacionamento
-            ctx.fillStyle = '#2a3a4a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Desenhar linhas do estacionamento
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
-            
-            // Linhas centrais
-            for (let y = 0; y < canvas.height; y += 100) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-            
-            // Desenhar vagas de estacionamento
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
-            for (let y = 50; y < canvas.height; y += 100) {
-                for (let x = 150; x < canvas.width; x += 200) {
-                    ctx.strokeRect(x, y, 60, 100);
-                    // Adicionar número da vaga
-                    if (x === 700 && y === 250) {
-                        ctx.fillStyle = '#4CAF50';
-                    } else {
-                        ctx.fillStyle = '#ffffff';
-                    }
-                    ctx.font = 'bold 14px Arial';
-                    ctx.fillText((x/100-1).toString(), x+25, y+60);
-                }
-            }
-            
-            // Desenhar carros estacionados
-            parkedCars.forEach(car => {
-                drawRotatedRect(car.x, car.y, car.width, car.height, car.angle, car.color);
-            });
-            
-            // Desenhar vaga de estacionamento (destacada)
-            ctx.strokeStyle = '#4CAF50';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.strokeRect(parkingSpot.x - parkingSpot.width/2, parkingSpot.y - parkingSpot.height/2, parkingSpot.width, parkingSpot.height);
-            ctx.setLineDash([]);
-            
-            // Desenhar carro do jogador
-            drawRotatedRect(playerCar.x, playerCar.y, playerCar.width, playerCar.height, playerCar.angle, playerCar.color);
-            
-            // Exibir velocidade
-            ctx.fillStyle = 'white';
-            ctx.font = '16px Arial';
-            ctx.fillText(`Velocidade: ${Math.abs(playerCar.speed).toFixed(1)}`, 20, 30);
-        }
-        
-        // Loop do jogo
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Iniciar jogo
-        gameLoop();
-    </script>
+      }
+
+      parkedCars.forEach(car => {
+        drawRotatedImage(parkedCarImage, car.x, car.y, car.width, car.height, car.angle);
+      });
+
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = '#4CAF50';
+      ctx.strokeRect(parkingSpot.x - parkingSpot.width / 2, parkingSpot.y - parkingSpot.height / 2, parkingSpot.width, parkingSpot.height);
+      ctx.setLineDash([]);
+
+      drawRotatedImage(carImage, playerCar.x, playerCar.y, playerCar.width, playerCar.height, playerCar.angle);
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function resetGame() {
+      playerCar.x = 100;
+      playerCar.y = 250;
+      playerCar.angle = 0;
+      playerCar.speed = 0;
+      successMessage.style.display = 'none';
+      parkingSpace.style.display = 'none';
+    }
+
+    gameLoop();
+  </script>
 </body>
 </html>
-
