@@ -1,45 +1,11 @@
 body {
   margin: 0;
-  background: #888; /* Arquibancada cinza */
+  background: black;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
-
-.arquibancada {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.meio {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.campo {
-  width: 600px;
-  height: 400px;
-  background: green;
-  border: 5px solid white;
-  box-sizing: border-box;
-}
-
-.linha-fans.horizontal {
-  display: flex;
-  justify-content: center;
-}
-
-.linha-fans.vertical {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.fan {
-  width: 20px;
-  height: 20px;
-  margin: 2px;
+canvas {
+  border: 2px solid #fff;
 }
