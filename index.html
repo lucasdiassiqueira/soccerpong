@@ -1,59 +1,93 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Pista Retangular com Bordas Arredondadas</title>
-  <style>
-    body {
-      margin: 0;
-      background: #3cb043;
-    }
-    canvas {
-      display: block;
-      margin: auto;
-      background: #3cb043; /* Grama */
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pista de Corrida</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #00a64f; /* verde */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .track {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background-color: #2f3033; /* pista */
+    border-radius: 100px; /* borda arredondada grande */
+    box-shadow: inset 0 0 10px #555;
+  }
+  /* faixa tracejada no centro da pista */
+  .track::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    right: 40px;
+    height: 10px;
+    background:
+      repeating-linear-gradient(
+        to right,
+        white,
+        white 15px,
+        transparent 15px,
+        transparent 30px
+      );
+    transform: translateY(-50%);
+    border-radius: 5px;
+  }
+
+  /* faixa tracejada nas curvas - usar 4 elementos circulares */
+  .curve {
+    position: absolute;
+    width: 100px;
+    height: 200px;
+    border: 10px solid transparent;
+    border-top: 10px dashed white;
+    border-bottom: 10px dashed white;
+    box-sizing: border-box;
+  }
+  .curve.top-left {
+    top: 0;
+    left: 0;
+    border-top-color: white;
+    border-left-color: white;
+    border-radius: 100px 0 0 100px;
+  }
+  .curve.top-right {
+    top: 0;
+    right: 0;
+    border-top-color: white;
+    border-right-color: white;
+    border-radius: 0 100px 100px 0;
+  }
+  .curve.bottom-left {
+    bottom: 0;
+    left: 0;
+    border-bottom-color: white;
+    border-left-color: white;
+    border-radius: 100px 0 0 100px;
+  }
+  .curve.bottom-right {
+    bottom: 0;
+    right: 0;
+    border-bottom-color: white;
+    border-right-color: white;
+    border-radius: 0 100px 100px 0;
+  }
+</style>
 </head>
 <body>
-  <canvas id="trackCanvas" width="800" height="600"></canvas>
-
-  <script>
-    const canvas = document.getElementById("trackCanvas");
-    const ctx = canvas.getContext("2d");
-
-    function drawRoundedRectTrack(x, y, width, height, radius, trackWidth) {
-      // Pista externa (borda branca/vermelha)
-      ctx.save();
-      ctx.lineWidth = trackWidth;
-      ctx.strokeStyle = "#ccc"; // Cor da pista
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.arcTo(x + width, y, x + width, y + radius, radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-      ctx.lineTo(x + radius, y + height);
-      ctx.arcTo(x, y + height, x, y + height - radius, radius);
-      ctx.lineTo(x, y + radius);
-      ctx.arcTo(x, y, x + radius, y, radius);
-      ctx.stroke();
-      ctx.restore();
-
-      // Faixas vermelhas/brancas ao redor
-      const totalSteps = 60;
-      for (let i = 0; i < totalSteps; i++) {
-        const angle = (i / totalSteps) * 2 * Math.PI;
-        const px = canvas.width / 2 + Math.cos(angle) * (width / 2 + 10);
-        const py = canvas.height / 2 + Math.sin(angle) * (height / 2 + 10);
-        ctx.beginPath();
-        ctx.fillStyle = i % 2 === 0 ? "red" : "white";
-        ctx.arc(px, py, 4, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    }
-
-    drawRoundedRectTrack(100, 100, 600, 400, 80, 40);
-  </script>
+  <div class="track">
+    <!-- faixas nas curvas (opcional, para detalhe visual) -->
+    <div class="curve top-left"></div>
+    <div class="curve top-right"></div>
+    <div class="curve bottom-left"></div>
+    <div class="curve bottom-right"></div>
+  </div>
 </body>
 </html>
