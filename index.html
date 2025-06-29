@@ -1,51 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <style>
-    .racetrack {
-      width: 400px;
-      height: 250px;
-      background: #333;
-      border-radius: 50px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-    .field {
-      width: 60%;
-      height: 70%;
-      background: #4CAF50;
-      border-radius: 20px;
-      position: absolute;
-      top: 15%;
-      left: 20%;
-      z-index: 1;
-    }
-    .track {
-      width: 90%;
-      height: 80%;
-      background: #555;
-      border-radius: 40px;
-      position: absolute;
-      top: 10%;
-      left: 5%;
-    }
-    .track-inner {
-      width: 80%;
-      height: 70%;
-      background: #333;
-      border-radius: 30px;
-      position: absolute;
-      top: 15%;
-      left: 10%;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Estacione o Carro</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="racetrack">
-    <div class="field"></div>
-    <div class="track"></div>
-    <div class="track-inner"></div>
+  <h1>Estacione o Carro!</h1>
+  <div id="gameArea">
+    <div id="parkingSpot"></div>
+    <img id="car" src="carro.png" alt="Carro">
   </div>
+  <div id="message"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
