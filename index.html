@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Corrida Top-Down</title>
+  <meta charset="UTF-8" />
+  <title>Corrida Fábrica Abandonada</title>
   <style>
     body {
       margin: 0;
@@ -13,13 +13,113 @@
       height: 100vh;
     }
     canvas {
-      border: 2px solid white;
-      background: #444;
+      background: #333;
+      image-rendering: pixelated;
+      border: 3px solid #999;
     }
   </style>
 </head>
 <body>
-  <canvas id="game" width="600" height="400"></canvas>
-  <script src="script.js"></script>
+  <canvas id="game" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const tileSize = 32;
+    const map = [
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,2,0,0,0,0,0,0,3,0,0,0,0,0,0,1],
+      [1,0,1,1,0,1,1,1,0,1,1,0,1,1,0,1,1,0,0,1],
+      [1,0,0,1,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,1],
+      [1,1,0,1,1,1,0,1,1,0,1,1,1,1,0,1,0,1,1,1],
+      [1,0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0,0,0,1],
+      [1,0,1,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1],
+      [1,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1],
+      [1,0,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,0,1],
+      [1,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ];
+
+    const tileColors = {
+      0: '#555',      // estrada
+      1: '#222',      // parede
+      2: '#993',      // caixa (desacelera)
+      3: '#277',      // óleo (escorrega)
+      4: '#6a0dad'    // checkpoint (meta)
+    };
+
+    function drawMap() {
+      for (let y = 0; y < map.length; y++) {
+        for (let x = 0; x < map[0].length; x++) {
+          ctx.fillStyle = tileColors[map[y][x]];
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        }
+      }
+    }
+
+    const players = [
+      { x: 2, y: 9, angle: 0, color: 'red', keys: {up:'w', down:'s', left:'a', right:'d'}, speed: 0, laps: 0 },
+      { x: 3, y: 9, angle: 0, color: 'blue', keys: {up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight'}, speed: 0, laps: 0 }
+    ];
+
+    const keysPressed = {};
+    document.addEventListener('keydown', e => keysPressed[e.key] = true);
+    document.addEventListener('keyup', e => keysPressed[e.key] = false);
+
+    function updatePlayer(p) {
+      const speedMax = 2;
+      const friction = 0.05;
+      const turnSpeed = 0.08;
+
+      if (keysPressed[p.keys.up]) p.speed += 0.1;
+      if (keysPressed[p.keys.down]) p.speed -= 0.1;
+      if (keysPressed[p.keys.left]) p.angle -= turnSpeed;
+      if (keysPressed[p.keys.right]) p.angle += turnSpeed;
+
+      p.speed *= (1 - friction);
+      if (p.speed > speedMax) p.speed = speedMax;
+      if (p.speed < -speedMax / 2) p.speed = -speedMax / 2;
+
+      const newX = p.x + Math.cos(p.angle) * p.speed * 0.1;
+      const newY = p.y + Math.sin(p.angle) * p.speed * 0.1;
+      const tile = map[Math.floor(newY)][Math.floor(newX)];
+
+      if (tile === 1) p.speed = 0; // parede para
+      else if (tile === 2) p.speed *= 0.5; // caixa freia
+      else if (tile === 3) p.speed *= 1.2; // óleo acelera
+      else {
+        p.x = newX;
+        p.y = newY;
+        if (tile === 4 && !p.checkpointReached) {
+          p.laps++;
+          p.checkpointReached = true;
+          if (p.laps >= 3) alert(`${p.color.toUpperCase()} venceu!`);
+        } else if (tile !== 4) {
+          p.checkpointReached = false;
+        }
+      }
+    }
+
+    function drawPlayer(p) {
+      ctx.save();
+      ctx.translate(p.x * tileSize + tileSize / 2, p.y * tileSize + tileSize / 2);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-10, -15, 20, 30);
+      ctx.restore();
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawMap();
+      for (let p of players) {
+        updatePlayer(p);
+        drawPlayer(p);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
 </body>
 </html>
