@@ -7,7 +7,7 @@
   <style>
     body {
       margin: 0;
-      padding: 20px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,7 +17,6 @@
 
     #game-container {
       position: relative;
-      margin-bottom: 20px;
     }
 
     #gameCanvas {
@@ -25,42 +24,6 @@
       border-radius: 8px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
       border: 3px solid #2a4a7e;
-    }
-
-    #instructions {
-      max-width: 600px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    #controls {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .control-row {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #45a049;
     }
 
     #success-message {
@@ -82,41 +45,14 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
-    #parking-space {
-      position: absolute;
-      border: 2px dashed #4CAF50;
-      display: none;
-    }
   </style>
 </head>
 <body>
-  <h1>Jogo de Estacionar</h1>
-
-  <div id="instructions">
-    <p>Estacione seu carro na vaga. Use as setas ou os botões abaixo para controlar o carro.</p>
-  </div>
-
   <div id="game-container">
     <canvas id="gameCanvas" width="800" height="500"></canvas>
     <div id="success-message">
       <h2>Parabéns!</h2>
-      <p>Você estacionou corretamente!</p>
-      <button onclick="resetGame()">Jogar Novamente</button>
-    </div>
-    <div id="parking-space"></div>
-  </div>
-
-  <div id="controls">
-    <div class="control-row">
-      <button id="up-btn">↑ Acelerar</button>
-    </div>
-    <div class="control-row">
-      <button id="left-btn">← Esquerda</button>
-      <button id="right-btn">→ Direita</button>
-    </div>
-    <div class="control-row">
-      <button id="down-btn">↓ Ré</button>
+      <p>Você completou o desafio!</p>
     </div>
   </div>
 
@@ -124,13 +60,11 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const successMessage = document.getElementById("success-message");
-    const parkingSpace = document.getElementById("parking-space");
 
     const carImage = new Image();
-    carImage.src = "carro.png";
-
+    carImage.src = "carro-removebg-preview.png";
     const parkedCarImage = new Image();
-    parkedCarImage.src = "carro.png";
+    parkedCarImage.src = "carro-removebg-preview.png";
 
     const playerCar = {
       x: 100, y: 250, width: 45, height: 80,
@@ -138,27 +72,32 @@
       maxSpeed: 3, acceleration: 0.05, deceleration: 0.02, turnSpeed: 0.03
     };
 
-    const parkedCars = [
-      { x: 180, y: 100, width: 45, height: 80, angle: 0 },
-      { x: 380, y: 200, width: 45, height: 80, angle: 0 },
-      { x: 580, y: 300, width: 45, height: 80, angle: 0 }
-    ];
+    let currentLevel = 0;
 
-    const parkingSpot = { x: 700, y: 400, width: 60, height: 100, angle: 0 };
+    const levels = [
+      {
+        parkingSpot: { x: 700, y: 100, width: 60, height: 100, angle: 0 },
+        parkedCars: []
+      },
+      {
+        parkingSpot: { x: 100, y: 400, width: 60, height: 100, angle: 0 },
+        parkedCars: [
+          { x: 100, y: 300, width: 45, height: 80, angle: 0 }
+        ]
+      },
+      {
+        parkingSpot: { x: 400, y: 250, width: 60, height: 100, angle: 0 },
+        parkedCars: [
+          { x: 400, y: 150, width: 45, height: 80, angle: 0 },
+          { x: 400, y: 350, width: 45, height: 80, angle: 0 }
+        ]
+      }
+    ];
 
     const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
 
     document.addEventListener('keydown', e => { if (keys.hasOwnProperty(e.key)) keys[e.key] = true; });
     document.addEventListener('keyup', e => { if (keys.hasOwnProperty(e.key)) keys[e.key] = false; });
-
-    document.getElementById("up-btn").onmousedown = () => keys.ArrowUp = true;
-    document.getElementById("down-btn").onmousedown = () => keys.ArrowDown = true;
-    document.getElementById("left-btn").onmousedown = () => keys.ArrowLeft = true;
-    document.getElementById("right-btn").onmousedown = () => keys.ArrowRight = true;
-
-    document.querySelectorAll("button").forEach(btn => btn.onmouseup = btn.onmouseleave = () => {
-      keys.ArrowUp = keys.ArrowDown = keys.ArrowLeft = keys.ArrowRight = false;
-    });
 
     function drawRotatedImage(img, x, y, width, height, angle) {
       ctx.save();
@@ -179,21 +118,25 @@
       playerCar.x += Math.sin(playerCar.angle) * playerCar.speed;
       playerCar.y -= Math.cos(playerCar.angle) * playerCar.speed;
 
-      playerCar.x = Math.max(playerCar.width / 2, Math.min(canvas.width - playerCar.width / 2, playerCar.x));
-      playerCar.y = Math.max(playerCar.height / 2, Math.min(canvas.height - playerCar.height / 2, playerCar.y));
+      const level = levels[currentLevel];
+      for (const car of level.parkedCars) {
+        if (checkCollision(playerCar, car)) {
+          // Apenas colisão visual
+        }
+      }
 
       if (
-        Math.abs(playerCar.x - parkingSpot.x) < 20 &&
-        Math.abs(playerCar.y - parkingSpot.y) < 20 &&
-        Math.abs(playerCar.angle - parkingSpot.angle) < 0.2 &&
+        Math.abs(playerCar.x - level.parkingSpot.x) < 20 &&
+        Math.abs(playerCar.y - level.parkingSpot.y) < 20 &&
+        Math.abs(playerCar.angle - level.parkingSpot.angle) < 0.2 &&
         Math.abs(playerCar.speed) < 0.1
       ) {
-        successMessage.style.display = 'block';
-        parkingSpace.style.display = 'block';
-        parkingSpace.style.left = `${parkingSpot.x - parkingSpot.width / 2}px`;
-        parkingSpace.style.top = `${parkingSpot.y - parkingSpot.height / 2}px`;
-        parkingSpace.style.width = `${parkingSpot.width}px`;
-        parkingSpace.style.height = `${parkingSpot.height}px`;
+        if (currentLevel < levels.length - 1) {
+          currentLevel++;
+          resetGame();
+        } else {
+          successMessage.style.display = 'block';
+        }
       }
     }
 
@@ -210,16 +153,23 @@
         }
       }
 
-      parkedCars.forEach(car => {
+      const level = levels[currentLevel];
+
+      level.parkedCars.forEach(car => {
         drawRotatedImage(parkedCarImage, car.x, car.y, car.width, car.height, car.angle);
       });
 
       ctx.setLineDash([5, 5]);
       ctx.strokeStyle = '#4CAF50';
-      ctx.strokeRect(parkingSpot.x - parkingSpot.width / 2, parkingSpot.y - parkingSpot.height / 2, parkingSpot.width, parkingSpot.height);
+      ctx.strokeRect(level.parkingSpot.x - level.parkingSpot.width / 2, level.parkingSpot.y - level.parkingSpot.height / 2, level.parkingSpot.width, level.parkingSpot.height);
       ctx.setLineDash([]);
 
       drawRotatedImage(carImage, playerCar.x, playerCar.y, playerCar.width, playerCar.height, playerCar.angle);
+    }
+
+    function checkCollision(rect1, rect2) {
+      return Math.abs(rect1.x - rect2.x) < (rect1.width + rect2.width) / 2 &&
+             Math.abs(rect1.y - rect2.y) < (rect1.height + rect2.height) / 2;
     }
 
     function gameLoop() {
@@ -233,8 +183,6 @@
       playerCar.y = 250;
       playerCar.angle = 0;
       playerCar.speed = 0;
-      successMessage.style.display = 'none';
-      parkingSpace.style.display = 'none';
     }
 
     gameLoop();
