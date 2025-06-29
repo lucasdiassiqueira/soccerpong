@@ -6,14 +6,48 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="stadium">
-    <div class="fans top"></div>
-    <div class="middle-row">
-      <div class="fans left"></div>
-      <div class="field"></div>
-      <div class="fans right"></div>
+  <div class="arquibancada">
+    <!-- Linha de torcedores - cima -->
+    <div class="linha-fans horizontal">
+      <!-- 30 torcedores no topo -->
+      <script>
+        for (let i = 0; i < 30; i++) {
+          document.write(`<img src="fan${i % 2}.png" class="fan">`);
+        }
+      </script>
     </div>
-    <div class="fans bottom"></div>
+
+    <div class="meio">
+      <!-- Coluna de torcedores - esquerda -->
+      <div class="linha-fans vertical">
+        <script>
+          for (let i = 0; i < 18; i++) {
+            document.write(`<img src="fan${i % 2}.png" class="fan">`);
+          }
+        </script>
+      </div>
+
+      <!-- Campo no meio -->
+      <div class="campo"></div>
+
+      <!-- Coluna de torcedores - direita -->
+      <div class="linha-fans vertical">
+        <script>
+          for (let i = 0; i < 18; i++) {
+            document.write(`<img src="fan${i % 2}.png" class="fan">`);
+          }
+        </script>
+      </div>
+    </div>
+
+    <!-- Linha de torcedores - baixo -->
+    <div class="linha-fans horizontal">
+      <script>
+        for (let i = 0; i < 30; i++) {
+          document.write(`<img src="fan${i % 2}.png" class="fan">`);
+        }
+      </script>
+    </div>
   </div>
 </body>
 </html>

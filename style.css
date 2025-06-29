@@ -1,74 +1,45 @@
 body {
   margin: 0;
-  background: #555; /* Arquibancada superior */
+  background: #888; /* Arquibancada cinza */
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-.stadium {
+.arquibancada {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
-  background: #444;
 }
 
-.middle-row {
+.meio {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.fans {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.fans.top, .fans.bottom {
-  width: 100%;
-  max-width: 900px;
-  height: 50px;
-}
-
-.fans.left, .fans.right {
-  width: 50px;
-  height: 500px;
-  flex-direction: column;
-}
-
-.field {
-  width: 800px;
-  height: 500px;
+.campo {
+  width: 600px;
+  height: 400px;
   background: green;
-  position: relative;
-  border: 10px solid #000;
-  box-shadow: 0 0 0 5px #0077ff, 0 0 0 10px #aa0000; /* camadas como na imagem */
+  border: 5px solid white;
+  box-sizing: border-box;
 }
 
-/* Estilo dos torcedores */
-.fans::before,
-.fans::after {
-  content: "";
-  display: contents;
+.linha-fans.horizontal {
+  display: flex;
+  justify-content: center;
 }
 
-.fans div {
+.linha-fans.vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fan {
   width: 20px;
   height: 20px;
-  background-size: cover;
   margin: 2px;
-  border-radius: 50%;
-}
-
-/* Torcedores vermelhos e azuis alternando */
-.fans div:nth-child(odd) {
-  background-image: url('torcedor2.png');
-}
-
-.fans div:nth-child(even) {
-  background-image: url('New\ Piskel.png');
 }
