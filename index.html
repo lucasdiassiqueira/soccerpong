@@ -2,73 +2,58 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Pista de Corrida - Inspirada</title>
+  <title>Pista Retangular com Bordas Arredondadas</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
-      background: #5dbb41;
+      background: #3cb043;
     }
-
     canvas {
       display: block;
+      margin: auto;
+      background: #3cb043; /* Grama */
     }
   </style>
 </head>
 <body>
-  <canvas id="trackCanvas" width="900" height="600"></canvas>
+  <canvas id="trackCanvas" width="800" height="600"></canvas>
 
   <script>
     const canvas = document.getElementById("trackCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Desenha a pista
-    function drawTrack() {
-      // Fundo verde
-      ctx.fillStyle = "#5dbb41";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Desenha caminho da pista
-      ctx.lineWidth = 60;
-      ctx.strokeStyle = "#cccccc"; // Cinza da pista
-      ctx.lineCap = "round";
-
+    function drawRoundedRectTrack(x, y, width, height, radius, trackWidth) {
+      // Pista externa (borda branca/vermelha)
+      ctx.save();
+      ctx.lineWidth = trackWidth;
+      ctx.strokeStyle = "#ccc"; // Cor da pista
       ctx.beginPath();
-      ctx.moveTo(150, 500);
-      ctx.lineTo(300, 500);
-      ctx.lineTo(300, 400);
-      ctx.lineTo(100, 300);
-      ctx.lineTo(100, 200);
-      ctx.lineTo(300, 150);
-      ctx.lineTo(600, 180);
-      ctx.lineTo(700, 300);
-      ctx.lineTo(500, 400);
-      ctx.lineTo(500, 500);
-      ctx.lineTo(650, 520);
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.arcTo(x + width, y, x + width, y + radius, radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+      ctx.lineTo(x + radius, y + height);
+      ctx.arcTo(x, y + height, x, y + height - radius, radius);
+      ctx.lineTo(x, y + radius);
+      ctx.arcTo(x, y, x + radius, y, radius);
       ctx.stroke();
+      ctx.restore();
 
-      // Bordas laranja
-      ctx.lineWidth = 70;
-      ctx.strokeStyle = "#ff7a00";
-      ctx.setLineDash([20, 15]);
-      ctx.beginPath();
-      ctx.moveTo(150, 500);
-      ctx.lineTo(300, 500);
-      ctx.lineTo(300, 400);
-      ctx.lineTo(100, 300);
-      ctx.lineTo(100, 200);
-      ctx.lineTo(300, 150);
-      ctx.lineTo(600, 180);
-      ctx.lineTo(700, 300);
-      ctx.lineTo(500, 400);
-      ctx.lineTo(500, 500);
-      ctx.lineTo(650, 520);
-      ctx.stroke();
-
-      ctx.setLineDash([]);
+      // Faixas vermelhas/brancas ao redor
+      const totalSteps = 60;
+      for (let i = 0; i < totalSteps; i++) {
+        const angle = (i / totalSteps) * 2 * Math.PI;
+        const px = canvas.width / 2 + Math.cos(angle) * (width / 2 + 10);
+        const py = canvas.height / 2 + Math.sin(angle) * (height / 2 + 10);
+        ctx.beginPath();
+        ctx.fillStyle = i % 2 === 0 ? "red" : "white";
+        ctx.arc(px, py, 4, 0, 2 * Math.PI);
+        ctx.fill();
+      }
     }
 
-    drawTrack();
+    drawRoundedRectTrack(100, 100, 600, 400, 80, 40);
   </script>
 </body>
 </html>
