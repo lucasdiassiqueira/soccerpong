@@ -50,7 +50,7 @@
     const carImage = new Image();
     carImage.src = "carro.png";
     const parkedCarImage = new Image();
-    parkedCarImage.src = "carro.png";
+    parkedCarImage.src = "png-transparente-vermelho-carro-pixel-arte-pixel-carro-corredor-pixel-arte-8-bit-retângulo-simetria-transporte-miniatura-removebg-preview.png";
 
     const playerCar = {
       x: 100, y: 250, width: 45, height: 80,
@@ -60,21 +60,29 @@
 
     let currentLevel = 0;
 
+    const staticParkedCars = [
+      { x: 150, y: 50, width: 45, height: 80, angle: 0 },
+      { x: 350, y: 50, width: 45, height: 80, angle: 0 },
+      { x: 550, y: 50, width: 45, height: 80, angle: 0 },
+      { x: 150, y: 150, width: 45, height: 80, angle: 0 },
+      { x: 350, y: 150, width: 45, height: 80, angle: 0 },
+      { x: 550, y: 150, width: 45, height: 80, angle: 0 },
+      { x: 150, y: 250, width: 45, height: 80, angle: 0 },
+      { x: 550, y: 250, width: 45, height: 80, angle: 0 },
+      { x: 150, y: 350, width: 45, height: 80, angle: 0 },
+      { x: 350, y: 350, width: 45, height: 80, angle: 0 },
+      { x: 550, y: 350, width: 45, height: 80, angle: 0 }
+    ];
+
     const levels = [
       {
-        parkingSpot: { x: 700, y: 100, width: 60, height: 100, angle: 0 },
-        parkedCars: []
+        parkingSpot: { x: 350, y: 250, width: 60, height: 100, angle: 0 }
       },
       {
-        parkingSpot: { x: 100, y: 400, width: 60, height: 100, angle: 0 },
-        parkedCars: [{ x: 100, y: 300, width: 45, height: 80, angle: 0 }]
+        parkingSpot: { x: 700, y: 400, width: 60, height: 100, angle: 0 }
       },
       {
-        parkingSpot: { x: 400, y: 250, width: 60, height: 100, angle: 0 },
-        parkedCars: [
-          { x: 400, y: 150, width: 45, height: 80, angle: 0 },
-          { x: 400, y: 350, width: 45, height: 80, angle: 0 }
-        ]
+        parkingSpot: { x: 400, y: 100, width: 60, height: 100, angle: 0 }
       }
     ];
 
@@ -100,12 +108,7 @@
       );
     }
 
-    function getAllParkedCars() {
-      return levels.slice(0, currentLevel + 1).flatMap(level => level.parkedCars);
-    }
-
     function update() {
-      // Corrigido: seta para cima acelera, para baixo dá ré
       if (keys.ArrowUp) {
         playerCar.speed = Math.min(playerCar.speed + playerCar.acceleration, playerCar.maxSpeed);
       } else if (keys.ArrowDown) {
@@ -128,7 +131,7 @@
       };
 
       let collided = false;
-      for (const car of getAllParkedCars()) {
+      for (const car of staticParkedCars) {
         const parkedRect = {
           x: car.x - car.width / 2,
           y: car.y - car.height / 2,
@@ -148,11 +151,9 @@
         playerCar.speed = 0;
       }
 
-      // Limites do canvas
       playerCar.x = Math.max(playerCar.width / 2, Math.min(canvas.width - playerCar.width / 2, playerCar.x));
       playerCar.y = Math.max(playerCar.height / 2, Math.min(canvas.height - playerCar.height / 2, playerCar.y));
 
-      // Verifica se estacionou corretamente
       const level = levels[currentLevel];
       if (
         Math.abs(playerCar.x - level.parkingSpot.x) < 20 &&
@@ -162,7 +163,7 @@
       ) {
         if (currentLevel < levels.length - 1) {
           currentLevel++;
-          resetGame(); // não reseta posição, só zera velocidade
+          resetGame();
         } else {
           successMessage.style.display = 'block';
         }
@@ -176,14 +177,18 @@
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 2;
 
-      // Vagas do estacionamento
       for (let y = 50; y < canvas.height; y += 100) {
         for (let x = 150; x < canvas.width; x += 200) {
           ctx.strokeRect(x, y, 60, 100);
         }
       }
 
-      // Vaga atual
+      // Desenhar carros fixos
+      staticParkedCars.forEach(car => {
+        drawRotatedImage(parkedCarImage, car.x, car.y, car.width, car.height, car.angle);
+      });
+
+      // Desenhar vaga do nível atual
       const level = levels[currentLevel];
       ctx.setLineDash([5, 5]);
       ctx.strokeStyle = '#4CAF50';
@@ -194,11 +199,6 @@
         level.parkingSpot.height
       );
       ctx.setLineDash([]);
-
-      // Carros estacionados de todos os níveis
-      getAllParkedCars().forEach(car => {
-        drawRotatedImage(parkedCarImage, car.x, car.y, car.width, car.height, car.angle);
-      });
 
       // Carro do jogador
       drawRotatedImage(carImage, playerCar.x, playerCar.y, playerCar.width, playerCar.height, playerCar.angle);
