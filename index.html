@@ -77,7 +77,7 @@
     const levels = [
       {
         parkingSpot: { x: 700, y: 100, width: 60, height: 100, angle: 0 },
-        parkedCars: []
+        parkedCars: [ ]
       },
       {
         parkingSpot: { x: 100, y: 400, width: 60, height: 100, angle: 0 },
@@ -107,23 +107,57 @@
       ctx.restore();
     }
 
+    function rectsCollide(r1, r2) {
+      return (
+        r1.x < r2.x + r2.width &&
+        r1.x + r1.width > r2.x &&
+        r1.y < r2.y + r2.height &&
+        r1.y + r1.height > r2.y
+      );
+    }
+
     function update() {
-      if (keys.ArrowUp) playerCar.speed = Math.min(playerCar.speed + playerCar.acceleration, playerCar.maxSpeed);
-      else if (keys.ArrowDown) playerCar.speed = Math.max(playerCar.speed - playerCar.acceleration, -playerCar.maxSpeed / 2);
+      if (keys.ArrowUp) playerCar.speed = Math.max(playerCar.speed - playerCar.acceleration, -playerCar.maxSpeed);
+      else if (keys.ArrowDown) playerCar.speed = Math.min(playerCar.speed + playerCar.acceleration, playerCar.maxSpeed);
       else playerCar.speed *= 0.98;
 
       if (keys.ArrowLeft) playerCar.angle -= playerCar.turnSpeed * playerCar.speed;
       if (keys.ArrowRight) playerCar.angle += playerCar.turnSpeed * playerCar.speed;
 
-      playerCar.x += Math.sin(playerCar.angle) * playerCar.speed;
-      playerCar.y -= Math.cos(playerCar.angle) * playerCar.speed;
+      const nextX = playerCar.x + Math.sin(playerCar.angle) * playerCar.speed;
+      const nextY = playerCar.y - Math.cos(playerCar.angle) * playerCar.speed;
+
+      const playerRect = {
+        x: nextX - playerCar.width / 2,
+        y: nextY - playerCar.height / 2,
+        width: playerCar.width,
+        height: playerCar.height
+      };
 
       const level = levels[currentLevel];
+      let collided = false;
       for (const car of level.parkedCars) {
-        if (checkCollision(playerCar, car)) {
-          // Apenas colisão visual
+        const parkedRect = {
+          x: car.x - car.width / 2,
+          y: car.y - car.height / 2,
+          width: car.width,
+          height: car.height
+        };
+        if (rectsCollide(playerRect, parkedRect)) {
+          collided = true;
+          break;
         }
       }
+
+      if (!collided) {
+        playerCar.x = nextX;
+        playerCar.y = nextY;
+      } else {
+        playerCar.speed = 0;
+      }
+
+      playerCar.x = Math.max(playerCar.width / 2, Math.min(canvas.width - playerCar.width / 2, playerCar.x));
+      playerCar.y = Math.max(playerCar.height / 2, Math.min(canvas.height - playerCar.height / 2, playerCar.y));
 
       if (
         Math.abs(playerCar.x - level.parkingSpot.x) < 20 &&
@@ -165,11 +199,6 @@
       ctx.setLineDash([]);
 
       drawRotatedImage(carImage, playerCar.x, playerCar.y, playerCar.width, playerCar.height, playerCar.angle);
-    }
-
-    function checkCollision(rect1, rect2) {
-      return Math.abs(rect1.x - rect2.x) < (rect1.width + rect2.width) / 2 &&
-             Math.abs(rect1.y - rect2.y) < (rect1.height + rect2.height) / 2;
     }
 
     function gameLoop() {
