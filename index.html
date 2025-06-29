@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Estacione o Carro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Jogo de Estacionar</h1>
+  <h1>Estacione entre os carros!</h1>
   <div id="gameArea">
+    <!-- Faixas -->
+    <div class="parking-line" style="top: 95px; left: 250px;"></div>
+    <div class="parking-line" style="top: 200px; left: 250px;"></div>
+
+    <!-- Carros parados -->
     <div class="other-car" style="top: 100px; left: 200px;"></div>
     <div class="other-car" style="top: 100px; left: 320px;"></div>
+
+    <!-- Vaga de estacionamento -->
     <div id="parkingSpot"></div>
-    <img id="car" src="carro.png" alt="Carro" />
+
+    <!-- Carro controlável -->
+    <img id="car" src="carro.png" alt="Carro do jogador" />
   </div>
   <div id="message"></div>
   <script src="script.js"></script>
